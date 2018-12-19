@@ -1,29 +1,37 @@
-def label_encode_vector(vector):
-    label_encoder = LabelEncoder()
-    vector = label_encoder.fit_transform(vector)
-    return vector
-
-def one_hot_encode_vector(vector):
-    vector = vector.reshape(-1, 1)
-    one_hot_encoder = OneHotEncoder(categorical_features=[0])
-    one_hot_encoded = one_hot_encoder.fit_transform(vector).toarray()
-    return one_hot_encoded
+import statsmodels.formula.api as sm
 
 
+def backward_elimination_using_pvalues(input_matrix, output_matrix, significance_level):
+    ordinary_least_squares_regressor = sm.OLS(endog=output_matrix, exog=input_matrix).fit()
+
+    while max(ordinary_least_squares_regressor.pvalues) > significance_level:
+        max_pvalue_index = ordinary_least_squares_regressor.pvalues.idxmax()
+        print('Dropping column: ', max_pvalue_index)
+        input_matrix.drop(labels=[max_pvalue_index], axis=1, inplace=True)
+        ordinary_least_squares_regressor = sm.OLS(endog=output_matrix, exog=input_matrix).fit()
+
+    print('Input matrix final shape: ', input_matrix.shape)
+    print(ordinary_least_squares_regressor.summary())
+
+    return input_matrix
 
 
-#
-# categorical_indices = [0, 2, 6, 7]
-# for index in categorical_indices:
-#     X[:, index] = toolkit.label_encode_vector(X[:, index])
-#
-#
-#
-# one_hot_encoded_replacements = {}
-# for index in categorical_indices:
-#     one_hot_encoded_replacements[index] = toolkit.one_hot_encode_vector(X[:, index])
-#
-#
-# for index in reversed(categorical_indices):
-#     np.delete(X, index, axis=1)
-#     np.insert(X, one_hot_encoded_replacements[index], axis=1)
+def backward_elimination_using_adjR2(input_matrix, output_matrix):
+    ordinary_least_squares_regressor = sm.OLS(endog=output_matrix, exog=input_matrix).fit()
+    previous_adjR2 = -1
+    adjR2 = ordinary_least_squares_regressor.rsquared_adj
+
+    while adjR2 >= previous_adjR2:
+        max_pvalue_index = ordinary_least_squares_regressor.pvalues.idxmax()
+        print('Dropping column: ', max_pvalue_index)
+        input_matrix.drop(labels=[max_pvalue_index], axis=1, inplace=True)
+        ordinary_least_squares_regressor = sm.OLS(endog=output_matrix, exog=input_matrix).fit()
+        previous_adjR2 = adjR2
+        adjR2 = ordinary_least_squares_regressor.rsquared_adj
+        # @todo need to restore recently deleted column because adjR2 is higher when it's in place
+
+    print(ordinary_least_squares_regressor.summary())
+    print('Input matrix final shape: ', input_matrix.shape)
+    print('adjR2:', adjR2, 'previous_adjR2: ', previous_adjR2)
+
+    return input_matrix
