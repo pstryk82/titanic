@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 import toolkit
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-import matplotlib.pyplot as plt
+# from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+# import matplotlib.pyplot as plt
 import statsmodels.tools as smtools
 
 dataframe = pd.read_csv('./dataset/train.csv')
@@ -11,7 +11,7 @@ dataframe = pd.read_csv('./dataset/train.csv')
 # Fare: doesn't seem to relate passengers
 # Cabin: too many missing values
 # Name: we have PassengerId anyway
-dataframe.drop(labels=['Name', 'Fare', 'Cabin'], axis=1, inplace=True)
+dataframe.drop(labels=['Name', 'Fare', 'Cabin', 'Ticket'], axis=1, inplace=True)
 
 
 # remove passengers with empty age (age itself seems to be relevant, shouldn't ignore it)
@@ -24,7 +24,7 @@ dataframe.dropna(subset=['Age'], inplace=True)
 dataframe.fillna(value={'Embarked':'S'}, inplace=True)
 
 # label encoding and one hot encoding categorical variables: Pclass, Sex, Ticket, Embarked
-dataframe = pd.get_dummies(dataframe, columns=['Pclass', 'Sex', 'Ticket', 'Embarked'], drop_first=True)
+dataframe = pd.get_dummies(dataframe, columns=['Pclass', 'Sex', 'Embarked'], drop_first=True)
 
 # for now feature scaling seems unnecessary, but we'll add it later if it turns out to be required
 
