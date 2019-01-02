@@ -4,6 +4,7 @@ import toolkit
 # from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 # import matplotlib.pyplot as plt
 import statsmodels.tools as smtools
+from ClassifierLibrary.DecisionTree import DecisionTreeClassifier
 
 dataframe = pd.read_csv('./dataset/train.csv')
 
@@ -48,19 +49,8 @@ X = toolkit.backward_elimination_using_pvalues(X, y, significance_level)
 
 
 # Fitting Decision Tree Classification to the Training set
-from sklearn.tree import DecisionTreeClassifier
-classifier = DecisionTreeClassifier(criterion = 'entropy')
-classifier.fit(X, y)
-
-# Predicting the Test set results
-y_pred = classifier.predict(X)
+classifier = DecisionTreeClassifier()
+accuracies, std = classifier.classify(X, y, verbose=True)
 
 
-
-
-
-from sklearn.model_selection import cross_val_score
-accuracies = cross_val_score(estimator = classifier, X = X, y = y_pred, cv = 10)
-print(accuracies.mean())
-print(accuracies.std())
 
