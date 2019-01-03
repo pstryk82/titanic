@@ -11,7 +11,7 @@ def backward_elimination_using_pvalues(input_matrix, output_matrix, significance
         ordinary_least_squares_regressor = sm.OLS(endog=output_matrix, exog=input_matrix).fit()
 
     print('Input matrix final shape: ', input_matrix.shape)
-    print(ordinary_least_squares_regressor.summary())
+    # print(ordinary_least_squares_regressor.summary())
 
     return input_matrix
 
@@ -30,7 +30,7 @@ def backward_elimination_using_adjR2(input_matrix, output_matrix):
         adjR2 = ordinary_least_squares_regressor.rsquared_adj
         # @todo need to restore recently deleted column because adjR2 is higher when it's in place
 
-    print(ordinary_least_squares_regressor.summary())
+    # print(ordinary_least_squares_regressor.summary())
     print('Input matrix final shape: ', input_matrix.shape)
     print('adjR2:', adjR2, 'previous_adjR2: ', previous_adjR2)
 
