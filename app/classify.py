@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import toolkit
 # from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 # import matplotlib.pyplot as plt
@@ -8,6 +7,10 @@ from ClassifierLibrary.DecisionTree import DecisionTreeClassifier
 from ClassifierLibrary.RandomForest import RandomForestClassifier
 
 dataframe = pd.read_csv('./dataset/train.csv')
+
+# create additional variable indicating if the passenger was travelling alone
+toolkit.set_passenger_was_alone(dataframe)
+
 
 # ignore following variables:
 # Fare: doesn't seem to relate passengers
