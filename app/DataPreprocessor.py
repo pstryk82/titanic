@@ -13,6 +13,10 @@ class DataPreprocessor:
     # then we can check if passenger was somebody's spouse and assume his age based on spouse's
     # or if he was somebody's sibling, we can assume his age based on them
 
+    # from the plots:
+    #   if someone had 4+ SibSp, he/she was <20 years old
+    #   if someone had 3+ Parch, he/she was 16-65 years old
+
 
         """
             def set_passenger_was_alone(self, self.dataframe: DataFrame):
@@ -33,10 +37,10 @@ class DataPreprocessor:
 
 
     def assume_family_member(self):
-        # if ticket number and surname is the same, we assume these are family members
-        duplicated_tickets = self.dataframe['Ticket'].duplicated(keep=False)
-        self.dataframe.insert(len(self.dataframe.columns), 'Surname', self.dataframe['Name'].str.split(',', expand=True)[0])
-        self.dataframe.groupby(['Ticket', 'Surname']).size()  # what to do next with this?
+        # # if ticket number and surname is the same, we assume these are family members
+        # duplicated_tickets = self.dataframe['Ticket'].duplicated(keep=False)
+        # self.dataframe.insert(len(self.dataframe.columns), 'Surname', self.dataframe['Name'].str.split(',', expand=True)[0])
+        # self.dataframe.groupby(['Ticket', 'Surname']).size()  # what to do next with this?
         pass
         
 

@@ -1,7 +1,11 @@
 # A separate model for assessing age of passengers where this information is not given.
+
 import numpy
 import pandas as pd
 import statsmodels.tools as smtools
+import matplotlib.pyplot as plt
+
+from RegressorLibrary.SupportVectorMachine import SupportVectorRegressor
 from app import toolkit
 from app.DataPreprocessor import DataPreprocessor
 
@@ -14,30 +18,56 @@ dataframe = original_train_dataframe.append(original_test_dataframe, ignore_inde
 preprocessor = DataPreprocessor(dataframe)
 preprocessor.resolve_surname()
 dataframe = preprocessor.dataframe
-dataframe.drop(labels=['Name', 'Cabin', 'Embarked', 'Fare', 'Pclass', 'Survived', 'Ticket'], axis=1, inplace=True)
+dataframe.drop(labels=['PassengerId', 'Name', 'Cabin', 'Embarked', 'Fare', 'Pclass', 'Ticket'], axis=1, inplace=True)
+dataframe.drop(labels=['Survived'], axis=1, inplace=True)
 
 # Split them again based on if passenger's Age is known or not
-train_dataframe = dataframe[~numpy.isnan(dataframe['Age'])]
-test_dataframe = dataframe[numpy.isnan(dataframe['Age'])]
+known_dataframe = dataframe[~numpy.isnan(dataframe['Age'])]
+prod_dataframe = dataframe[numpy.isnan(dataframe['Age'])]
 # note: this line achieves the same, but I don't fully understand how it works ;)
-# train_dataframe, test_dataframe = [x for _, x in dataframe.groupby(numpy.isnan(dataframe['Age'])) ]
+# known_dataframe, prod_dataframe = [x for _, x in dataframe.groupby(numpy.isnan(dataframe['Age'])) ]
+
+# Let's draw some stuff to see things better
+def draw_plots():
+    plt.scatter(known_dataframe.iloc[:, 1], known_dataframe.iloc[:, 0], marker='o')  # Parch
+    plt.scatter(known_dataframe.iloc[:, 4], known_dataframe.iloc[:, 0], marker='+')  # SibSp
+    plt.scatter(known_dataframe.iloc[:, 7], known_dataframe.iloc[:, 0], marker='x')  # FamilySize
+    plt.xlabel('Parch');
+    plt.ylabel('Age')
+    plt.legend()
+    # plt.colorbar()
+    plt.show()
+
+# draw_plots()
+
 
 # Data preprocessing
-train_dataframe = pd.get_dummies(train_dataframe, columns=['Sex', 'Surname'], drop_first=True)
+known_dataframe = pd.get_dummies(known_dataframe, columns=['Sex', 'Surname'], drop_first=True)
 
 # Extract independent and dependent variable matrices
-X = train_dataframe.drop(labels=['PassengerId', 'Age'], axis=1)
-y = train_dataframe._getitem_column('Age')
-
-# Backward Elimination
-
+X = known_dataframe.drop(labels=['Age'], axis=1)
 # add a column of 1s
 X = smtools.add_constant(X)
 
+y = known_dataframe._getitem_column('Age')
+y = y.values.reshape(-1, 1)
+
+# Backward Elimination
 significance_level = 0.05
-X = toolkit.backward_elimination_using_pvalues(X, y, significance_level)
+X = toolkit.backward_elimination_using_adjR2(X, y)
+# X = toolkit.backward_elimination_using_pvalues(X, y, significance_level)
+
 
 # Fit the model using few regressors, cross-validate each one, pick the one with lowest MSE
-from sklearn.tree import DecisionTreeRegressor
-regressor = DecisionTreeRegressor()
-regressor.fit(X, y)
+regressor = SupportVectorRegressor(kernel='rbf')
+X, y = regressor.scaleFeatures(X, y)
+
+y = numpy.ravel(y)
+score, std = regressor.estimate(X, y, scoring='neg_mean_squared_error', verbose=True)
+score, std = regressor.estimate(X, y, scoring='neg_mean_absolute_error', verbose=True)
+score, std = regressor.estimate(X, y, scoring='explained_variance', verbose=True)
+score, std = regressor.estimate(X, y, scoring='r2', verbose=True)
+
+# @TODO add more regressors and pick the most accurate one
+# @TODO call this script from classify.py and make it pass the dataframes back there
+# @TODO load data in classify.py as 1 dataset and pass it here

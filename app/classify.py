@@ -2,7 +2,9 @@ import pandas as pd
 import toolkit
 # from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 # import matplotlib.pyplot as plt
+
 import statsmodels.tools as smtools
+import ClassifierLibrary
 from ClassifierLibrary.DecisionTree import DecisionTreeClassifier
 from ClassifierLibrary.LogisticRegression import LogisticRegressionClassifier
 from ClassifierLibrary.RandomForest import RandomForestClassifier
@@ -80,15 +82,15 @@ X = toolkit.backward_elimination_using_pvalues(X, y, significance_level)
 accuracies = {}
 std = {}
 classifier = DecisionTreeClassifier()
-accuracies['Decision Tree'], std['Decision Tree'] = classifier.classify(X, y)
+accuracies['Decision Tree'], std['Decision Tree'] = classifier.estimate(X, y)
 
 
 # Fitting Random Forest Classification to the Training set
 classifier = RandomForestClassifier()
-accuracies['Random Forest'], std['Random Forest'] = classifier.classify(X, y)
+accuracies['Random Forest'], std['Random Forest'] = classifier.estimate(X, y)
 
 classifier = LogisticRegressionClassifier()
-accuracies['Logistic Regression'], std['Logistic Regression'] = classifier.classify(X, y)
+accuracies['Logistic Regression'], std['Logistic Regression'] = classifier.estimate(X, y)
 
 print('accuracies: ', accuracies)
 print('std: ', std)

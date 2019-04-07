@@ -3,9 +3,9 @@ from ClassifierLibrary.AbstractClassifier import AbstractClassifier
 
 class LogisticRegressionClassifier(AbstractClassifier):
     def __init__(self):
-        self.engine = LogisticRegression()
+        super().__init__()
+        self.engine = LogisticRegression(solver='lbfgs')
 
-
-    def printSumary(self, accuracues, std):
-        print('Logistic Regression mean accuracy: ', accuracues)
-        print('Logistic Regression mean standard deviation: ', std)
+    def printSummary(self, score, std, scoringFunction):
+        print('Logistic Regression mean ', scoringFunction, ': ', score)
+        print('Logistic Regression standard deviation: ', std)
