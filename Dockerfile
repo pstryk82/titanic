@@ -4,5 +4,9 @@ ADD . /code
 WORKDIR /code
 RUN pip install -r requirements.txt
 
-WORKDIR /code/app
-CMD ["python", "classify.py"]
+RUN pip install -e .
+
+WORKDIR /code
+CMD ["python", "app/classify.py"]
+
+CMD ["bash"]
