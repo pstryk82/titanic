@@ -1,6 +1,1 @@
-numpy
-pandas==0.20.3
 statsmodels
-scipy
-sklearn
-matplotlib

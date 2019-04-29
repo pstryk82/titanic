@@ -13,5 +13,5 @@ class SupportVectorRegressor(AbstractRegressor):
         return y_pred
 
     def printSummary(self, score, std, scoringFunction):
-        print('Support Vector Regression mean ', scoringFunction, ': ', score)
+        print('Support Vector Regression ', scoringFunction, ': ', score)
         print('Support Vector Regression deviation: ', scoringFunction, ': ', std)

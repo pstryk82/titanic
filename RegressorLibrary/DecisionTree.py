@@ -8,3 +8,6 @@ class DecisionTreeRegressor(AbstractRegressor):
         super().__init__()
         self.engine = SklearnDecisionTreeRegressor()
 
+    def printSummary(self, score, std, scoringFunction):
+        print('Decision Tree Regression ', scoringFunction, ': ', score)
+        print('Decision Tree Regression deviation: ', scoringFunction, ': ', std)

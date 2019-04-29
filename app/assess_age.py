@@ -5,7 +5,9 @@ import pandas as pd
 import statsmodels.tools as smtools
 import matplotlib.pyplot as plt
 
-from RegressorLibrary.SupportVectorMachine import SupportVectorRegressor
+from RegressorLibrary.DecisionTree import DecisionTreeRegressor
+from RegressorLibrary.Linear import LinearRegressor
+from RegressorLibrary.SupportVectorRegression import SupportVectorRegressor
 from app import toolkit
 from app.DataPreprocessor import DataPreprocessor
 
@@ -59,15 +61,27 @@ X = toolkit.backward_elimination_using_adjR2(X, y)
 
 
 # Fit the model using few regressors, cross-validate each one, pick the one with lowest MSE
-regressor = SupportVectorRegressor(kernel='rbf')
-X, y = regressor.scaleFeatures(X, y)
+def fit_and_estimate(regressor, X, y, scale_features=False):
+    if scale_features:
+        X, y = regressor.scaleFeatures(X, y)
 
-y = numpy.ravel(y)
-score, std = regressor.estimate(X, y, scoring='neg_mean_squared_error', verbose=True)
-score, std = regressor.estimate(X, y, scoring='neg_mean_absolute_error', verbose=True)
-score, std = regressor.estimate(X, y, scoring='explained_variance', verbose=True)
-score, std = regressor.estimate(X, y, scoring='r2', verbose=True)
+    y = numpy.ravel(y)
+    score, std = regressor.estimate(X, y, scoring='neg_mean_squared_error', verbose=True)
+    score, std = regressor.estimate(X, y, scoring='neg_mean_absolute_error', verbose=True)
+    score, std = regressor.estimate(X, y, scoring='explained_variance', verbose=True)
+    score, std = regressor.estimate(X, y, scoring='r2', verbose=True)
+
+svr_regressor = SupportVectorRegressor(kernel='rbf')
+fit_and_estimate(svr_regressor, X, y, scale_features=True)
+
+decision_tree_regressor = DecisionTreeRegressor()
+fit_and_estimate(decision_tree_regressor, X, y)
+
+linear_regressor = LinearRegressor()
+fit_and_estimate(linear_regressor, X, y)
+
 
 # @TODO add more regressors and pick the most accurate one
+#       DONE: stick to SVR
 # @TODO call this script from classify.py and make it pass the dataframes back there
 # @TODO load data in classify.py as 1 dataset and pass it here
