@@ -16,20 +16,8 @@ class DataPreprocessor:
     # from the plots:
     #   if someone had 4+ SibSp, he/she was <20 years old
     #   if someone had 3+ Parch, he/she was 16-65 years old
+        pass
 
-
-        """
-            def set_passenger_was_alone(self, self.dataframe: DataFrame):
-                self.dataframe.insert(len(self.dataframe.columns), 'Alone', numpy.nan)
-                self.dataframe.loc[self.dataframe['SibSp'] > 0, 'Alone'] = 0
-                self.dataframe.loc[self.dataframe['Parch'] > 0, 'Alone'] = 0
-
-                tickets = self.dataframe['Ticket']
-
-                self.dataframe.loc[self.dataframe.Ticket.isin(tickets[tickets.duplicated(keep=False)]), 'Alone'] = 0
-
-                self.dataframe.fillna(value={'Alone': 1}, inplace=True)
-        """
 
     def set_family_size(self):
         self.dataframe.insert(len(self.dataframe.columns), 'FamilySize', 0)
